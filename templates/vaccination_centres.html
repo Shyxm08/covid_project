@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vaccination Centers</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Vaccination Centers</h1>
+    <ul>
+        {% for center in centers %}
+        <li>{{ center.name }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

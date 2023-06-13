@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dosage Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Dosage Details</h1>
+    <table>
+        <tr>
+            <th>Vaccination Center</th>
+            <th>Number of Dosages</th>
+        </tr>
+        {% for dosage in dosage_details %}
+        <tr>
+            <td>{{ dosage[0] }}</td>
+            <td>{{ dosage[1] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

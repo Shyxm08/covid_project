@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Welcome, {{ admin.username }}</h1>
+    <h2>Admin Dashboard</h2>
+    <div class="options">
+        <a href="{{ url_for('add_vaccination_center') }}" class="btn">Add Vaccination Center</a>
+        <a href="{{ url_for('dosage_details') }}" class="btn">Get Dosage Details</a>
+        <a href="{{ url_for('remove_vaccination_center', center_id=center.id) }}" class="btn">Remove Vaccination Center</a>
+        <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+    </div>
+</body>
+</html>
