@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Add Vaccination Center</title>
+    <title>Add Vaccination Centre</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
 </head>
 <body>
-    <h1>Add Vaccination Center</h1>
-    <form action="{{ url_for('add_vaccination_center') }}" method="POST">
-        <label for="name">Name:</label>
-        <input type="text" name="name" id="name" required>
-        <label for="working_hours">Working Hours:</label>
-        <input type="text" name="working_hours" id="working_hours" required>
-        <input type="submit" value="Add Center">
+    <h1 class="login-title">Add Vaccination Centre</h1>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn-home">Back</a>
+    <form action="/add_vaccination_centre" method="POST">
+        <label for="id" class="login-label">ID:</label>
+        <input type="text" id="id" name="id" required class="login-input"><br><br>
+
+        <label for="name" class="login-label">Name:</label>
+        <input type="text" id="name" name="name" required class="login-input"><br><br>
+
+        <label for="working_hours" class="login-label">Working Hours:</label>
+        <input type="text" id="working_hours" name="working_hours" required class="login-input"><br><br>
+
+        <input type="submit" value="Add Vaccination Centre" class="login-button">
     </form>
 </body>
 </html>
