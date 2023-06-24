@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Remove Vaccination Centre</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1 class="login-title">Remove Vaccination Centre</h1>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn-home">Back</a>
+    <form method="POST" action="/remove_vaccination_centre">
+        <label for="centre_id" class="login-label">Vaccination Centre ID:</label>
+        <input type="text" name="centre_id" id="centre_id" required class="login-input">
+        <button type="submit" class="btn-home">Remove</button>
+    </form>
+</body>
+</html>
