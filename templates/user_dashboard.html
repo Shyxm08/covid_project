@@ -5,11 +5,29 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Welcome, {{ user.username }}</h1>
-    <h2>User Dashboard</h2>
-    <div class="options">
-        <a href="{{ url_for('search_vaccination_centers') }}" class="btn">Search Vaccination Centers</a>
-        <a href="{{ url_for('logout') }}" class="btn">Logout</a>
-    </div>
+    <h1 id="dashboard-title">User Dashboard</h1>
+    <table id="dashboard-table">
+        <tr>
+            <th>Vaccination Centre</th>
+            <th>Working Hours</th>
+            <th>Dosage Count</th>
+            <th>Action</th>
+        </tr>
+        {% for center in vaccination_centers %}
+        <tr>
+            <td>{{ center.name }}</td>
+            <td>{{ center.working_hours }}</td>
+            <td>{{ center.dosage_count }}</td>
+            <td>
+                {% if center.dosage_count > 0 %}
+                <a href="{{ url_for('apply_slot', center_id=center.id) }}">Apply Slot</a>
+                {% else %}
+                No Slots Available
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('home') }}" class="btn-home">Back</a>
 </body>
 </html>
