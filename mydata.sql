@@ -13,20 +13,25 @@ CREATE TABLE admin (
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL
 );
-
 CREATE TABLE vaccination_center (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    working_hours VARCHAR(255) NOT NULL
+  id INT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  working_hours VARCHAR(255) NOT NULL,
+  dosage_count INT NOT NULL
 );
 
 CREATE TABLE vaccination_slot (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    center_id INT NOT NULL,
-    user_id INT NOT NULL,
-    slot_date DATE NOT NULL,
-    slot_time TIME NOT NULL
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  center_id INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  age INT NOT NULL,
+  date DATE NOT NULL,
+  time TIME NOT NULL,
+  FOREIGN KEY (center_id) REFERENCES vaccination_center (id)
 );
 
-ALTER TABLE vaccination_slot ADD CONSTRAINT fk_center_id FOREIGN KEY (center_id) REFERENCES vaccination_center(id);
-ALTER TABLE vaccination_slot ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES user(id);
+INSERT INTO `admin`(`id`, `username`, `password`) VALUES ('1','admin1','abcdefg')
+
+
+
+
