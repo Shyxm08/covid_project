@@ -17,6 +17,9 @@ db = mysql.connector.connect(
 cursor = db.cursor(dictionary=True)
 
 
+@app.route('/favicon.ico')
+def favicon():
+    return app.send_static_file('favicon.ico')
 
 @app.route("/")
 def home():
@@ -24,26 +27,47 @@ def home():
 
 
 
-@app.route('/home/user_login', methods=['GET', 'POST'])
+# @app.route('/home/user_login', methods=['GET', 'POST'])
+# def user_login():
+#     if request.method == 'POST':
+#         username = request.form['username']
+#         password = request.form['password']
+       
+
+#         cursor.execute("SELECT * FROM user WHERE username = %s", (username,))
+#         #cursor.nextset()
+#         user = cursor.fetchone()
+
+
+#         if user and user['password'] == password:
+#             session['user_id'] = user['id']
+#             return redirect(url_for('user_dashboard'))
+#         else:
+#             error = 'Invalid credentials. Please try again.'
+#             return render_template('user_login.html', error=error)
+
+#     return render_template('user_login.html')
+@app.route('/user_login', methods=['GET', 'POST'])
 def user_login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-       
 
         cursor.execute("SELECT * FROM user WHERE username = %s", (username,))
-        cursor.nextset()
-        user = cursor.fetchone()
+        users = cursor.fetchall()  # Consume the result set
 
+        user = next((user for user in users if user['password'] == password), None)
 
-        if user and user['password'] == password:
+        if user:
             session['user_id'] = user['id']
-            return redirect('/user_dashboard')
+            return redirect(url_for('user_dashboard'))
         else:
             error = 'Invalid credentials. Please try again.'
             return render_template('user_login.html', error=error)
 
     return render_template('user_login.html')
+
+
 
 
 @app.route('/user_signup', methods=['GET', 'POST'])
@@ -55,100 +79,74 @@ def user_signup():
         cursor.execute("INSERT INTO user (username, password) VALUES (%s, %s)", (username, password))
         db.commit()
 
-        return redirect('/home/user_login')
+        return redirect(url_for('user_login'))
 
     return render_template('signup.html', role='user')
 
 
 @app.route('/user_dashboard')
 def user_dashboard():
-    user_id = session.get('user_id')
-    if user_id:
-        cursor.execute("SELECT * FROM user WHERE id = %s", (user_id,))
-        user = cursor.fetchone()
+    
+    cursor.execute("SELECT id, name, working_hours, dosage_count FROM vaccination_center")
+    vaccination_centers = cursor.fetchall()
 
-        cursor.execute("SELECT * FROM vaccination_center")
-        centers = cursor.fetchall()
-
-        return render_template('user_dashboard.html', user=user, centers=centers)
-    else:
-        return redirect('/home/user_login')
+    return render_template('user_dashboard.html', vaccination_centers=vaccination_centers)
 
 
-@app.route('/search_vaccination_centers')
-def search_vaccination_centers():
-    cursor.execute("SELECT * FROM vaccination_center")
-    centers = cursor.fetchall()
 
-    return render_template('vaccination_centers.html', centers=centers)
+@app.route('/apply_slot/<int:center_id>', methods=['GET', 'POST'])
+def apply_slot(center_id):
+    if request.method == 'POST':
+        name = request.form['name']
+        age = request.form['age']
+        date = request.form['date']
+        time = request.form['time']
 
+        
+        dosage_count = 0 
+        cursor.execute("SELECT dosage_count FROM vaccination_center WHERE id = %s", (center_id,))
+        result = cursor.fetchone()
+        if result is not None:
+            dosage_count = result['dosage_count']
 
-@app.route('/apply_vaccination_slot/<int:center_id>', methods=['GET', 'POST'])
-def apply_vaccination_slot(center_id):
-    user_id = session.get('user_id')
-    if user_id:
-        if request.method == 'POST':
-            slot_date = request.form['slot_date']
-            slot_time = request.form['slot_time']
+        if dosage_count > 0:
+      
+            cursor.execute("UPDATE vaccination_center SET dosage_count = dosage_count - 1 WHERE id = %s", (center_id,))
+            db.commit()
 
-            cursor.execute("SELECT * FROM vaccination_center WHERE id = %s", (center_id,))
-            center = cursor.fetchone()
+            flash('Slot applied successfully! Please be there on time.', 'success')
+            return redirect('/user_dashboard')
 
-            if center:
-                # Check available slots for the selected date
-                cursor.execute("SELECT COUNT(*) AS slots_count FROM vaccination_slot WHERE center_id = %s AND slot_date = %s",
-                               (center_id, slot_date))
-                slots_count = cursor.fetchone()['slots_count']
+    
+    cursor.execute("SELECT name, working_hours, dosage_count FROM vaccination_center WHERE id = %s", (center_id,))
+    center = cursor.fetchone()
 
-                if slots_count < 10:
-                    # Insert new slot
-                    cursor.execute("INSERT INTO vaccination_slot (center_id, user_id, slot_date, slot_time) "
-                                   "VALUES (%s, %s, %s, %s)",
-                                   (center_id, user_id, slot_date, slot_time))
-                    db.commit()
-
-                    success_message = 'Vaccination slot booked successfully!'
-                    return render_template('apply_slot.html', center=center, success_message=success_message)
-                else:
-                    error_message = 'No available slots for the selected date.'
-                    return render_template('apply_slot.html', center=center, error_message=error_message)
-            else:
-                error_message = 'Invalid vaccination center.'
-                return redirect('/search_vaccination_centers')
-
-        cursor.execute("SELECT * FROM vaccination_center WHERE id = %s", (center_id,))
-        center = cursor.fetchone()
-
-        if center:
-            return render_template('apply_slot.html', center=center)
-        else:
-            return redirect('/search_vaccination_centers')
-    else:
-        return redirect('/home/user_login')
+    return render_template('apply_slot.html', center=center)
 
 
 
 
-@app.route('/login/admin', methods=['GET', 'POST'])
 
+
+@app.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
 
-        
-        if username == 'admin' and password == 'admin123':
-            
+        cursor.execute("SELECT * FROM admin WHERE username = %s", (username,))
+        admins = cursor.fetchall() 
+
+        admin = next((admin for admin in admins if admin['password'] == password), None)
+
+        if admin:
+            session['admin_id'] = admin['id']
             return redirect(url_for('admin_dashboard'))
+        else:
+            error = 'Invalid credentials. Please try again.'
+            return render_template('admin_login.html', error=error)
 
-        flash('Invalid username or password', 'error')
-
-   
     return render_template('admin_login.html')
-
-
-
-
 
 @app.route('/admin_dashboard')
 def admin_dashboard():
@@ -156,40 +154,53 @@ def admin_dashboard():
     if admin_id:
         cursor.execute("SELECT * FROM admin WHERE id = %s", (admin_id,))
         admin = cursor.fetchone()
-
-        cursor.execute("SELECT vaccination_center.id, vaccination_center.name, "
-                       "COUNT(vaccination_slot.id) AS slots_count "
-                       "FROM vaccination_center "
-                       "LEFT JOIN vaccination_slot ON vaccination_center.id = vaccination_slot.center_id "
-                       "GROUP BY vaccination_center.id, vaccination_center.name")
-        dosage_details = cursor.fetchall()
-
-        return render_template('admin_dashboard.html', admin=admin, dosage_details=dosage_details)
+        return render_template('admin_dashboard.html', admin=admin)
     else:
         return redirect('/login/admin')
 
+@app.route('/dosage_details')
+def dosage_details():
+    cursor.execute("SELECT name, dosage_count FROM vaccination_center")
+    dosage_details = cursor.fetchall()
+    return render_template('dosage_details.html', dosage_details=dosage_details)
 
-@app.route('/add_vaccination_center', methods=['GET', 'POST'])
-def add_vaccination_center():
+
+
+
+@app.route('/add_vaccination_centre', methods=['GET', 'POST'])
+def add_vaccination_centre():
     if request.method == 'POST':
+        id = request.form['id']
         name = request.form['name']
         working_hours = request.form['working_hours']
 
-        cursor.execute("INSERT INTO vaccination_center (name, working_hours) VALUES (%s, %s)",
-                       (name, working_hours))
-        db.commit()
+        cursor.execute("INSERT INTO vaccination_center (id, name, working_hours, dosage_count) "
+                       "VALUES (%s, %s, %s, 10)", (id, name, working_hours))
 
+        flash('Vaccination centre added successfully!', 'success')
+        db.commit()
         return redirect('/admin_dashboard')
 
-    return render_template('add_vaccination_center.html')
+    return render_template('add_vaccination_centre.html')
 
 
-@app.route('/remove_vaccination_center/<int:center_id>')
-def remove_vaccination_center(center_id):
-    cursor.execute("DELETE FROM vaccination_center WHERE id = %s", (center_id,))
-    db.commit()
+@app.route('/remove_vaccination_centre', methods=['GET', 'POST'])
+def remove_vaccination_centre():
+    if request.method == 'POST':
+       
+        centre_id = request.form['centre_id']
+        
+       
+        cursor.execute("DELETE FROM vaccination_center WHERE id = %s", (centre_id,))
+        db.commit()  
+        
+        flash('Vaccination centre removed successfully!', 'success')
+        return redirect('/admin_dashboard')
+    
+  
+    return render_template('remove_vaccination_centre.html')
 
-    return redirect('/admin_dashboard')
+
 
 
 @app.route('/logout')
