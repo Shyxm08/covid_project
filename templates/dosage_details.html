@@ -5,18 +5,29 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Dosage Details</h1>
-    <table>
-        <tr>
-            <th>Vaccination Center</th>
-            <th>Number of Dosages</th>
-        </tr>
-        {% for dosage in dosage_details %}
-        <tr>
-            <td>{{ dosage[0] }}</td>
-            <td>{{ dosage[1] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <h1 id="dashboard-title">Dosage Details</h1>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn-home">Back</a>
+    <br>
+    <br>
+    {% if dosage_details %}
+        <table id="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Vaccination Centre</th>
+                    <th>Dosage(s) Available</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in dosage_details %}
+                    <tr>
+                        <td>{{ row['name'] }}</td>
+                        <td>{{ row['dosage_count'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="login-title">No records available</p>
+    {% endif %}
 </body>
 </html>
