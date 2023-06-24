@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Apply Slot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1 class="login-title" color="black">Apply Slot</h1>
+    <a href="{{ url_for('user_dashboard') }}" class="btn-home">Back</a>
+    <table id="dashboard-table">
+        <tr>
+            <th>Name of the Centre</th>
+            <th>Working Hours</th>
+            <th>Dosages Available</th>
+        </tr>
+        <tr>
+            <td>{{ center.name }}</td>
+            <td>{{ center.working_hours }}</td>
+            <td>{{ center.dosage_count }}</td>
+        </tr>
+    </table>
+    <form method="post">
+        <label for="name" class="login-label">Name:</label>
+        <input type="text" class="login-input" name="name" required>
+        <br>
+        <label for="age" class="login-label">Age:</label>
+        <input type="text" class="login-input" name="age" required>
+        <br>
+        <label for="date" class="login-label">Date:</label>
+        <input type="text" class="login-input" name="date" required>
+        <br>
+        <label for="time" class="login-label">Time:</label>
+        <input type="text" class="login-input" name="time" required>
+        <br>
+        <input type="submit" value="Apply" class="login-button">
+    </form>
+</body>
+</html>
