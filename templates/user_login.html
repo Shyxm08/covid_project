@@ -5,15 +5,18 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>User Login</h1>
-    <form action="{{ url_for('user_login') }}" method="POST">
-        <label for="username">Username:</label>
-        <input type="text" name="username" id="username" required>
-        <label for="password">Password:</label>
-        <input type="password" name="password" id="password" required>
-        <input type="submit" value="Login">
+    <h1 class="login-title">User Login</h1>
+    <a href="{{ url_for('home') }}" class="btn-home">Home</a>
+    <form action="/user_login" method="POST">
+        <div class="abc">
+        <label for="username" class="login-label">Username:</label>
+        <input type="text" name="username" id="username" class="login-input" required>
+        <label for="password" class="login-label">Password:</label>
+        <input type="password" name="password" id="password" class="login-input" required>
+        <input type="submit" value="Login" class="login-button">
+        </div>
     </form>
-    <p>{{ error }}</p>
-    <p>Don't have an account? <a href="{{ url_for('user_signup') }}">Sign up here</a></p>
+    <p class="login-error">{{ error }}</p>
+    <p class="signup-link">Don't have an account? <a href="{{ url_for('user_signup') }}">Sign up here</a></p>
 </body>
 </html>
