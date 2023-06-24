@@ -5,10 +5,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Welcome to the Vaccination Booking System</h1>
-    <div class="options">
-        <a href="{{ url_for('user_login') }}" class="btn">User Login</a>
-        <a href="{{ url_for('admin_login') }}" class="btn">Admin Login</a>
+    <div id="container">
+        <h1>Welcome to the Vaccination Booking System</h1>
+        <img src="{{ url_for('static', filename='download.png') }}" alt="Landscape Image">
+        <div id="options">
+            <a href="{{ url_for('user_login') }}" class="btn">User Login</a>
+            <a href="{{ url_for('admin_login') }}" class="btn">Admin Login</a>
+        </div>
     </div>
 </body>
 </html>
