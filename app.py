@@ -21,6 +21,8 @@ cursor = db.cursor(dictionary=True)
 def favicon():
     return app.send_static_file('favicon.ico')
 
+
+
 @app.route("/")
 def home():
     return render_template('home.html')
